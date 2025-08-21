@@ -1,0 +1,19 @@
+{
+  "name": "uniflow-api-test",
+  "version": "1.0.0",
+  "description": "Token 발급 + window.open POST 테스트 프로젝트",
+  "main": "server.js",
+  "scripts": {
+    "start": "node js/server.js",
+    "dev": "nodemon js/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "author": "",
+  "license": "MIT"
+}
