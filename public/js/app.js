@@ -66,6 +66,7 @@ function collectSystems() {
   document.querySelectorAll(".system-box").forEach((box) => {
     const id = box.dataset.id;
     systems.push({
+      systemName: document.getElementById(`systemName-${id}`).value, 
       baseUrl: document.getElementById(`baseUrl-${id}`).value,
       formId: document.getElementById(`formId-${id}`).value,
       clientKey: document.getElementById(`clientKey-${id}`).value,
@@ -79,6 +80,7 @@ function collectSystems() {
 function addSystemBox(id, values = {}) {
   // 기본값 정의
   const defaults = {
+    systemName: `업무시스템 #${id}`,
     baseUrl: "https://uniflow.unipost.co.kr",
     formId: "21D7A8C088B24A579F37DA1B85F7AA54",
     clientKey: "861905132B80441D906AAF31C47BB968",
@@ -95,7 +97,10 @@ function addSystemBox(id, values = {}) {
   box.dataset.id = id;
 
   box.innerHTML = `
-    <h3>업무시스템 #${id}</h3>
+    <div class="system-title">
+      #${id}. 업무시스템:
+      <input type="text" id="systemName-${id}" value="${v.systemName || ""}" placeholder="업무시스템명 입력">
+    </div>
     <label>BASE_URL: <input type="text" id="baseUrl-${id}" size="50" value="${v.baseUrl}"></label><br>
     <label>FORM_ID: <input type="text" id="formId-${id}" size="50" value="${v.formId}"></label><br>
     <label>CLIENT_KEY: <input type="text" id="clientKey-${id}" size="50" value="${v.clientKey}"></label><br>

@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node js/server.js",
-    "dev": "nodemon js/server.js"
+    "dev": "nodemon public/js/server.js"
   },
   "dependencies": {
     "axios": "^1.7.7",

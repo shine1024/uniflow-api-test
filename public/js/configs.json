@@ -1,0 +1,9 @@
+[
+  {
+    "systemName": "신인프라 시스템",
+    "baseUrl": "http://localhost:41040",
+    "formId": "NIMS-01",
+    "clientKey": "DF0AFD37CDF84DD6928AF7D732A1A613",
+    "userId": "demo001"
+  }
+]
