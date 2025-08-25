@@ -124,6 +124,7 @@ function encodeUnicode(str) {
 // 실제 API 호출 로직은 utils.js 활용 가능
 // 테스트 실행 함수
 async function runTest(id) {
+  const systemName = document.getElementById(`systemName-${id}`).value;
   const baseUrl = document.getElementById(`baseUrl-${id}`).value;
   const formId = document.getElementById(`formId-${id}`).value;
   const clientKey = document.getElementById(`clientKey-${id}`).value;
@@ -140,139 +141,21 @@ async function runTest(id) {
     const token = tokenRes?.response?.token;
     if (!token) throw new Error("토큰 발급 실패");
 
-    const HTML = `<div class="unidocu-approval-contents">
-    <style>
-        body{
-        user-select: initial;
-    }
-        .unidocu-approval-contents {
-        min-width: 730px;
-        font-size: 12px;
-    }
-        .unidocu-approval-contents table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-        .unidocu-approval-contents table td,
-        .unidocu-approval-contents table th {
-        font-size: 12px;
-        border: 1px solid #ccc;
-        word-break: break-all;
-        text-align: center;
-        height: 20px;
-        background-color: #ffffff;
-        padding: 3px;
-    }
-        .unidocu-approval-contents table th {
-        background-color: #eee;
-    }
-        .unidocu-approval-contents .statement-evidence-link {
-        width: 17px;
-        height: 16px;
-        display: inline-block;
-        vertical-align: bottom;
-        cursor: pointer;
-        margin-left: 5px;
-        background-image: url(data:image/gif;base64,R0lGODlhEQAQALMAANvb29PT0/z8/GppaePj4+jo6PX19eXl5erq6uvr63h4ePf39+Hh4bS0tP///wAAACH5BAAAAAAALAAAAAARABAAAARpUJjCqr2sGAma/+AHTE3gnGjqBA3VnEssy2dTvbKiz4tjM7iFIjfz3RzC2DAZMwIdCUU0QZVSna+pdXr9vRAIBTg8RmAdY51YBz4f3vDDQHc4Owj4PEFXy5RUgCwaHSGFDSMSFBgYGgIRADs=);
-    }
-    </style>
-    <div style="margin-top: 35px;"></div>
-    <table id="header" style="margin-top: 10px; table-layout: fixed; word-wrap: break-word">
-        <tbody><tr style="text-align: center">
-            <th style="width: 11%">전표번호</th>
-            <th style="width: 13%">전표유형</th>
-            <th style="width: 10%">전기일</th>
-            <th style="width: 10%">증빙일</th>
-            <th style="width: 35%">헤더텍스트</th>
-            <th style="width: 8%">전표통화</th>
-            <th style="width: 10%">환율</th>
-        </tr>
-        <tr>
-            <td data-test="1234" style="text-align: center" data-field-description="BELNR">3200000096</td>
-            <td style="text-align: center" data-field-description="BLART_TXT">현금영수증/종이증빙</td>
-            <td style="text-align: center" data-field-description="BUDAT">2024-07-29</td>
-            <td style="text-align: center" data-field-description="BLDAT">2024-07-29</td>
-            <td data-field-description="BKTXT" class="ellipsis"><span></span></td>
-            <td style="text-align: center" data-field-description="WAERS">KRW</td>
-            <td style="text-align: center;" data-field-description="KURSF">0.00000</td>
-        </tr>
-        </tbody></table>
-    <table id="contents" style="table-layout: fixed; margin-top: 10px;">
-        <tbody><tr>
-            <th rowspan="2" style="width: 5%;"><p>순 번</p></th>
-            <th style="width: 18%;">계정과목</th>
-            <th style="width: 18%;">거래처</th>
-            <th style="width: 12%;">사업자번호</th>
-            <th style="width: 12%;">지급예정일</th>
-            <th style="width: 13%;">차변(LC)</th>
-            <th style="width: 13%;">대변(LC)</th>
-        </tr>
-        <tr>
-            <th>CC/IO/WBS</th>
-            <th>세금코드</th>
-            <th colspan="2">적요</th>
-            <th>차변(TC)</th>
-            <th>대변(TC)</th>
-        </tr>
-        <tr><!--순번~대변(LC)-->
-            <td rowspan="2" style="text-align: center" data-field-description="BUZEI">001</td>
-            <td data-field-description="HKONT_TXT">미지급금-종업원</td>
-            <td data-field-description="LIFNR_TXT">유니포스트</td>
-            <td data-field-description="STCD2_TXT"></td>
-            <td data-field-description="NETDT">2024-07-31</td>
-            <td data-field-description="ot_data2.DMBTR_S_TXT ot_data2.WRBTR_S_TXT" rowspan="2" style="text-align: right"><br></td>
-            <td data-field-description="ot_data2.DMBTR_H_TXT ot_data2.WRBTR_H_TXT" rowspan="2" style="text-align: right">                        5,061<br></td>
-        </tr>
-        <tr><!--CC/IO/WBS~대변(TC)-->
-            <td data-field-description="KOSTL_TXT"></td>
-            <td data-field-description="MWSKZ_TXT"></td>
-            <td colspan="2" data-field-description="SGTXT">aaa</td>
-        </tr>
-        <tr><!--순번~대변(LC)-->
-            <td rowspan="2" style="text-align: center" data-field-description="BUZEI">002</td>
-            <td data-field-description="HKONT_TXT">(일)여비교통비-시내교통비</td>
-            <td data-field-description="LIFNR_TXT"></td>
-            <td data-field-description="STCD2_TXT"></td>
-            <td data-field-description="NETDT">0000-00-00</td>
-            <td data-field-description="ot_data2.DMBTR_S_TXT ot_data2.WRBTR_S_TXT" rowspan="2" style="text-align: right">                        5,061<br></td>
-            <td data-field-description="ot_data2.DMBTR_H_TXT ot_data2.WRBTR_H_TXT" rowspan="2" style="text-align: right"><br></td>
-        </tr>
-        <tr><!--CC/IO/WBS~대변(TC)-->
-            <td data-field-description="KOSTL_TXT">솔루션팀</td>
-            <td data-field-description="MWSKZ_TXT"></td>
-            <td colspan="2" data-field-description="SGTXT">aaa</td>
-        </tr>
-        <tr>
-            <td rowspan="2" colspan="3" style="text-align: center;height: 40px">소계</td>
-            <td colspan="2" data-field-description="ot_data1.LWAERS">KRW</td>
-            <td data-field-description="ot_data1.DMBTR_S_TXT" style="text-align: right;">                        5,061</td>
-            <td data-field-description="ot_data1.DMBTR_H_TXT" style="text-align: right;">                        5,061</td>
-        </tr>
-        <tr>
-            <td colspan="2" data-field-description="ot_data1.WAERS">KRW</td>
-            <td data-field-description="ot_data1.WRBTR_S_TXT" style="text-align: right;">                        5,061</td>
-            <td data-field-description="ot_data1.WRBTR_H_TXT" style="text-align: right;">                        5,061</td>
-        </tr>
-        </tbody></table>
-    <table id="footer" style="margin-top: 10px">
-        <tbody><tr>
-            <td style="width: 434px; height: 40px">총계</td>
-            <td data-field-description="os_head.WAERS" style="width: 249px"></td>
-            <td data-field-description="os_head.TOTAL_TXT" style="width: 132px; text-align: right;">                        5,061</td>
-            <td data-field-description="os_head.TOTAL_TXT" style="width: 132px; text-align: right;">                        5,061</td>
-        </tr>
-        </tbody></table>
-</div>`;
+    // 통합
+    const JSON_HTML_DATA = {"HEADER": {"PUM_KEY": "35909", "MODULEID": "INFRA", "DOCTYPE": "LGL_INFRA_STATEMENT", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "G_ALIB202508193391", "ETC1": "", "ETC2": "", "ETC3": "", "REMARK": "택배사업본부 서울구로지점[54304] 개봉(대)[11336] 대구81자2131 차량 - 2025년08월", "TOTAL_SUM": "46,347", "PROCESS_SIGNER": {"EMPLOYEE_NUM": "", "DEPT_CD": "", "SIGN_TYPE": ""}}, "BODY": [{"MST": {"SAPNO": "", "TITLE": "매입_2025년 08월  차량 보험료 납부 요청건", "EVIDENCEURL": "", "STATEMENTNO": "NI2025081900002", "TEAM_CODE": "H1000", "TEAMNM": "택배운영부문", "USERNM": "시스템관리자(개발)", "DATEEVIDENCE": "2025-08-19", "CURRENCY": "KRW", "EXCHANGE": "0", "ACCOUNT_TYPE_CODE": "HA", "ACCOUNT_TYPE": "매입", "PAYMENTDATE": "2025-08-20", "DEPT_CD": "H1000", "DEPT_NM": "택배운영부문", "SUPPLYVALUE": "13,322", "TAX": "0", "DEBTOR_SUM": "13,322", "CREDITOR_SUM": "13,322", "FOREIGN_DEBTOR_SUM": "", "FOREIGN_CREDITOR_SUM": "", "SUM": "13,322", "ACCOUNT": "선급비용", "TAX_CODE": "99", "SUMMARY": "매입_2025년 08월  차량 보험료 납부 요청건", "DOCUMENTNO": "NI2025081900002", "BUSINESS_NUMBER": "418-82-01190", "CUSTOMER_CODE_NM": "전국화물자동차공제조합", "EVIDENCE_YN": "N", "PROFIT_CENTER_NM": "인천지점", "BILLING_RECEIPT": "청구", "PURC_TAX_MAPPING": "예외", "TAX_APPR_NO": "", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "ALIB202508194935", "DATE": "2025-08-19", "PAYMENT_CODE" : "", "PAYMENT_CODE_NAME" : "", "PAYMENTMETHOD": "현금", "PAYMENTMETHOD_NAME": "", "SUGI_YN" : "", "BANK_NAME": "", "ACCT_OWNER": "", "ACCT_NUMBER" : ""}, "DTL": [{"NO": "1", "DEBTOR_CREDITOR": "31", "ENTRYKEY": "31", "ACCOUNT_CODE": "21003010", "ACCOUNT_CODENM": "미지급금(업체)", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "T000", "AREA_NAME": "택배부문", "PLACE_CODE": "0000", "PLACE": "", "PROFIT_CENTER_CODE": "40000", "PROFIT_CENTER": "인천지점", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "99", "TAX_NM": "매입-기타(부가세 무관)", "SUMMARY": "위수탁/직영 차량 보험료 선급금", "PAYMENTDATE": "2025-08-20", "DEBTOR": "0", "FOREIGN_SUMNM": "", "CREDITOR": "13,322", "FOREIGN_CREDITOR": ""}, {"NO": "2", "DEBTOR_CREDITOR": "40", "ENTRYKEY": "40", "ACCOUNT_CODE": "11109001", "ACCOUNT_CODENM": "선급비용", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "T000", "AREA_NAME": "택배부문", "PLACE_CODE": "0000", "PLACE": "", "PROFIT_CENTER_CODE": "15300", "PROFIT_CENTER": "서울구로지점", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "99", "TAX_NM": "매입-기타(부가세 무관)", "SUMMARY": "위수탁/직영 차량(대구81자2131)종합 보험료(2025.08.19 - 2025.10.18)", "PAYMENTDATE": "2025-08-20", "DEBTOR": "13,322", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}]}, {"MST": {"SAPNO": "", "TITLE": "매입_2025년 08월  차량 보험료 납부 요청건", "EVIDENCEURL": "", "STATEMENTNO": "NI2025081900003", "TEAM_CODE": "H1000", "TEAMNM": "택배운영부문", "USERNM": "시스템관리자(개발)", "DATEEVIDENCE": "2025-08-19", "CURRENCY": "KRW", "EXCHANGE": "0", "ACCOUNT_TYPE_CODE": "I1", "ACCOUNT_TYPE": "매입", "PAYMENTDATE": "2025-08-20", "DEPT_CD": "H1000", "DEPT_NM": "택배운영부문", "SUPPLYVALUE": "33,025", "TAX": "0", "PAYMENTMETHOD": "현금", "DEBTOR_SUM": "33,025", "CREDITOR_SUM": "33,025", "FOREIGN_DEBTOR_SUM": "", "FOREIGN_CREDITOR_SUM": "", "SUM": "33,025", "ACCOUNT": "가지급금(업무가불)", "TAX_CODE": "", "SUMMARY": "매입_2025년 08월  차량 보험료 납부 요청건", "DOCUMENTNO": "NI2025081900003", "BUSINESS_NUMBER": "418-82-01190", "CUSTOMER_CODE_NM": "전국화물자동차공제조합", "EVIDENCE_YN": "N", "PROFIT_CENTER_NM": "유한킴벌리운영", "BILLING_RECEIPT": "청구", "PURC_TAX_MAPPING": "예외", "TAX_APPR_NO": "", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "ALIB202508194936", "DATE": "2025-08-19", "PAYMENT_CODE" : "", "PAYMENT_CODE_NAME" : "", "PAYMENTMETHOD": "현금", "PAYMENTMETHOD_NAME": "", "SUGI_YN" : "", "BANK_NAME": "", "ACCT_OWNER": "", "ACCT_NUMBER" : ""}, "DTL": [{"NO": "1", "DEBTOR_CREDITOR": "31", "ENTRYKEY": "31", "ACCOUNT_CODE": "21003010", "ACCOUNT_CODENM": "미지급금(업체)", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량 보험료 가지급금", "PAYMENTDATE": "2025-08-20", "DEBTOR": "0", "FOREIGN_SUMNM": "", "CREDITOR": "33,025", "FOREIGN_CREDITOR": ""}, {"NO": "2", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "10,002", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}, {"NO": "3", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "23,023", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}]}]}
+
+    // 일반
+    // const JSON_HTML_DATA = {"HEADER": {"PUM_KEY": "35909", "MODULEID": "INFRA", "DOCTYPE": "LGL_INFRA_STATEMENT", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "G_ALIB202508193391", "ETC1": "", "ETC2": "", "ETC3": "", "REMARK": "택배사업본부 서울구로지점[54304] 개봉(대)[11336] 대구81자2131 차량 - 2025년08월", "TOTAL_SUM": "46,347", "PROCESS_SIGNER": {"EMPLOYEE_NUM": "", "DEPT_CD": "", "SIGN_TYPE": ""}}, "BODY": [{"MST": {"SAPNO": "", "TITLE": "매입_2025년 08월  차량 보험료 납부 요청건", "EVIDENCEURL": "", "STATEMENTNO": "NI2025081900003", "TEAM_CODE": "H1000", "TEAMNM": "택배운영부문", "USERNM": "시스템관리자(개발)", "DATEEVIDENCE": "2025-08-19", "CURRENCY": "KRW", "EXCHANGE": "0", "ACCOUNT_TYPE_CODE": "I1", "ACCOUNT_TYPE": "매입", "PAYMENTDATE": "2025-08-20", "DEPT_CD": "H1000", "DEPT_NM": "택배운영부문", "SUPPLYVALUE": "33,025", "TAX": "0", "PAYMENTMETHOD": "현금", "DEBTOR_SUM": "33,025", "CREDITOR_SUM": "33,025", "FOREIGN_DEBTOR_SUM": "", "FOREIGN_CREDITOR_SUM": "", "SUM": "33,025", "ACCOUNT": "가지급금(업무가불)", "TAX_CODE": "", "SUMMARY": "매입_2025년 08월  차량 보험료 납부 요청건", "DOCUMENTNO": "NI2025081900003", "BUSINESS_NUMBER": "418-82-01190", "CUSTOMER_CODE_NM": "전국화물자동차공제조합", "EVIDENCE_YN": "N", "PROFIT_CENTER_NM": "유한킴벌리운영", "BILLING_RECEIPT": "청구", "PURC_TAX_MAPPING": "예외", "TAX_APPR_NO": "", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "ALIB202508194936", "DATE": "2025-08-19", "PAYMENT_CODE": "", "PAYMENT_CODE_NAME": "", "PAYMENTMETHOD": "현금", "PAYMENTMETHOD_NAME": "", "SUGI_YN": "", "BANK_NAME": "", "ACCT_OWNER": "", "ACCT_NUMBER": ""}, "DTL": [{"NO": "1", "DEBTOR_CREDITOR": "31", "ENTRYKEY": "31", "ACCOUNT_CODE": "21003010", "ACCOUNT_CODENM": "미지급금(업체)", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량 보험료 가지급금", "PAYMENTDATE": "2025-08-20", "DEBTOR": "0", "FOREIGN_SUMNM": "", "CREDITOR": "33,025", "FOREIGN_CREDITOR": ""}, {"NO": "2", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "10,002", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}, {"NO": "3", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "23,023", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}]}]};
 
     // 3. 팝업 오픈
     const params = {
       token,
       apiKey: "approvalWrite",
       jsonData: JSON.stringify({
-        aprvTitle: new Date().toISOString() + " API 테스트",
+        aprvTitle: `API 테스트 - ${systemName} - ${formatDate()}`,
         formId,
         ifAppId: Date.now().toString(),
-        docAddCont: encodeUnicode(HTML),
+        docAddCont: JSON_HTML_DATA,
         isViewTempBtn: "Y",
         lstAprvSCDocLine: [
           {
@@ -316,4 +199,16 @@ function removeSystem(id) {
   if (box) {
     box.remove();
   }
+}
+
+// 날짜 포맷 함수
+function formatDate(date = new Date()) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0'); // 월
+  const dd = String(date.getDate()).padStart(2, '0');      // 일
+  const hh = String(date.getHours()).padStart(2, '0');     // 시
+  const mi = String(date.getMinutes()).padStart(2, '0');   // 분
+  const ss = String(date.getSeconds()).padStart(2, '0');   // 초
+
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
 }

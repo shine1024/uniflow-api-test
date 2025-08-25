@@ -4,6 +4,13 @@
     "baseUrl": "http://localhost:41040",
     "formId": "NIMS-01",
     "clientKey": "DF0AFD37CDF84DD6928AF7D732A1A613",
-    "userId": "demo001"
+    "userId": "demo003"
+  },
+  {
+    "systemName": "테스트 시스템",
+    "baseUrl": "http://localhost:41040",
+    "formId": "F424A9473D744542B3B76FCBA411B526",
+    "clientKey": "DF0AFD37CDF84DD6928AF7D732A1A613",
+    "userId": "demo003"
   }
 ]

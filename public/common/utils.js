@@ -53,7 +53,21 @@ function openWithPost(url, data, target = "popup") {
     form.appendChild(input);
   }
 
-  window.open("", target, "width=1800,height=1200");
+ // 팝업 크기
+  const width = 1800;
+  const height = 1200;
+
+  // 화면 크기 가져오기
+  const screenWidth = window.screen.width;
+  const screenHeight = window.screen.height;
+
+  // 중앙 좌표 계산
+  const left = Math.max(0, (screenWidth - width) / 2);
+  const top = Math.max(0, (screenHeight - height) / 2);
+
+  // 중앙에 위치한 새 창 열기
+  window.open("", target, `width=${width},height=${height},left=${left},top=${top}`);
+
   document.body.appendChild(form);
   form.submit();
   document.body.removeChild(form);
