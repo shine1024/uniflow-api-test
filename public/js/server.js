@@ -2,6 +2,7 @@ const express = require("express");
 const axios = require("axios");
 const path = require("path");
 const fs = require("fs");
+const https = require("https"); 
 
 const app = express();
 const PORT = 3000;
@@ -18,10 +19,11 @@ const CONFIG_FILE = path.join(__dirname, "configs.json");
 // ======================
 app.post("/api/proxy", async (req, res) => {
   try {
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const { baseUrl, path: apiPath, headers, body } = req.body;
-
     const response = await axios.post(`${baseUrl}${apiPath}`, body || {}, {
       headers,
+      httpsAgent,
     });
     res.json(response.data);
   } catch (err) {

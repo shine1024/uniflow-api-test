@@ -71,6 +71,8 @@ function collectSystems() {
       formId: document.getElementById(`formId-${id}`).value,
       clientKey: document.getElementById(`clientKey-${id}`).value,
       userId: document.getElementById(`userId-${id}`).value,
+      multiJson: document.getElementById(`multiJson-${id}`).value,
+      simpleJson: document.getElementById(`simpleJson-${id}`).value,
     });
   });
   return systems;
@@ -104,8 +106,15 @@ function addSystemBox(id, values = {}) {
     <label>BASE_URL: <input type="text" id="baseUrl-${id}" size="50" value="${v.baseUrl}"></label><br>
     <label>FORM_ID: <input type="text" id="formId-${id}" size="50" value="${v.formId}"></label><br>
     <label>CLIENT_KEY: <input type="text" id="clientKey-${id}" size="50" value="${v.clientKey}"></label><br>
-    <label>USER_ID: <input type="text" id="userId-${id}" size="50" value="${v.userId}"></label><br><br>
-    <button onclick="runTest(${id})">테스트 실행</button>
+    <label>USER_ID: <input type="text" id="userId-${id}" size="50" value="${v.userId}"></label><br>
+    <label>통합결재_JSON_DATA:<br>
+      <textarea id="multiJson-${id}" rows="2" cols="60">${v.multiJson || ""}</textarea>
+    </label><br>
+    <label>일반결재_JSON_DATA:<br>
+      <textarea id="simpleJson-${id}" rows="2" cols="60">${v.simpleJson || ""}</textarea>
+    </label><br>
+    <button onclick="runMultiTest(${id})">통합결재 테스트 실행</button>
+    <button onclick="runSimpleTest(${id})">일반결재 테스트 실행</button>
     <button onclick="removeSystem(${id})">삭제</button>
   `;
 
@@ -120,15 +129,25 @@ function encodeUnicode(str) {
   return btoa(binary); // Base64 인코딩
 }
 
+async function runMultiTest(id) {
+  runTest('M', id);
+}
+
+async function runSimpleTest(id) {
+  runTest('S', id);
+}
+
 // 테스트 실행 함수 (샘플용)
 // 실제 API 호출 로직은 utils.js 활용 가능
 // 테스트 실행 함수
-async function runTest(id) {
+async function runTest(type, id) {
   const systemName = document.getElementById(`systemName-${id}`).value;
   const baseUrl = document.getElementById(`baseUrl-${id}`).value;
   const formId = document.getElementById(`formId-${id}`).value;
   const clientKey = document.getElementById(`clientKey-${id}`).value;
   const userId = document.getElementById(`userId-${id}`).value;
+  const multiJson = document.getElementById(`multiJson-${id}`).value;
+  const simpleJson = document.getElementById(`simpleJson-${id}`).value;
 
   try {
     // 1. SecretKey 발급
@@ -142,11 +161,8 @@ async function runTest(id) {
     if (!token) throw new Error("토큰 발급 실패");
 
     // 통합
-    const JSON_HTML_DATA = {"HEADER": {"PUM_KEY": "35909", "MODULEID": "INFRA", "DOCTYPE": "LGL_INFRA_STATEMENT", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "G_ALIB202508193391", "ETC1": "", "ETC2": "", "ETC3": "", "REMARK": "택배사업본부 서울구로지점[54304] 개봉(대)[11336] 대구81자2131 차량 - 2025년08월", "TOTAL_SUM": "46,347", "PROCESS_SIGNER": {"EMPLOYEE_NUM": "", "DEPT_CD": "", "SIGN_TYPE": ""}}, "BODY": [{"MST": {"SAPNO": "", "TITLE": "매입_2025년 08월  차량 보험료 납부 요청건", "EVIDENCEURL": "", "STATEMENTNO": "NI2025081900002", "TEAM_CODE": "H1000", "TEAMNM": "택배운영부문", "USERNM": "시스템관리자(개발)", "DATEEVIDENCE": "2025-08-19", "CURRENCY": "KRW", "EXCHANGE": "0", "ACCOUNT_TYPE_CODE": "HA", "ACCOUNT_TYPE": "매입", "PAYMENTDATE": "2025-08-20", "DEPT_CD": "H1000", "DEPT_NM": "택배운영부문", "SUPPLYVALUE": "13,322", "TAX": "0", "DEBTOR_SUM": "13,322", "CREDITOR_SUM": "13,322", "FOREIGN_DEBTOR_SUM": "", "FOREIGN_CREDITOR_SUM": "", "SUM": "13,322", "ACCOUNT": "선급비용", "TAX_CODE": "99", "SUMMARY": "매입_2025년 08월  차량 보험료 납부 요청건", "DOCUMENTNO": "NI2025081900002", "BUSINESS_NUMBER": "418-82-01190", "CUSTOMER_CODE_NM": "전국화물자동차공제조합", "EVIDENCE_YN": "N", "PROFIT_CENTER_NM": "인천지점", "BILLING_RECEIPT": "청구", "PURC_TAX_MAPPING": "예외", "TAX_APPR_NO": "", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "ALIB202508194935", "DATE": "2025-08-19", "PAYMENT_CODE" : "", "PAYMENT_CODE_NAME" : "", "PAYMENTMETHOD": "현금", "PAYMENTMETHOD_NAME": "", "SUGI_YN" : "", "BANK_NAME": "", "ACCT_OWNER": "", "ACCT_NUMBER" : ""}, "DTL": [{"NO": "1", "DEBTOR_CREDITOR": "31", "ENTRYKEY": "31", "ACCOUNT_CODE": "21003010", "ACCOUNT_CODENM": "미지급금(업체)", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "T000", "AREA_NAME": "택배부문", "PLACE_CODE": "0000", "PLACE": "", "PROFIT_CENTER_CODE": "40000", "PROFIT_CENTER": "인천지점", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "99", "TAX_NM": "매입-기타(부가세 무관)", "SUMMARY": "위수탁/직영 차량 보험료 선급금", "PAYMENTDATE": "2025-08-20", "DEBTOR": "0", "FOREIGN_SUMNM": "", "CREDITOR": "13,322", "FOREIGN_CREDITOR": ""}, {"NO": "2", "DEBTOR_CREDITOR": "40", "ENTRYKEY": "40", "ACCOUNT_CODE": "11109001", "ACCOUNT_CODENM": "선급비용", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "T000", "AREA_NAME": "택배부문", "PLACE_CODE": "0000", "PLACE": "", "PROFIT_CENTER_CODE": "15300", "PROFIT_CENTER": "서울구로지점", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "99", "TAX_NM": "매입-기타(부가세 무관)", "SUMMARY": "위수탁/직영 차량(대구81자2131)종합 보험료(2025.08.19 - 2025.10.18)", "PAYMENTDATE": "2025-08-20", "DEBTOR": "13,322", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}]}, {"MST": {"SAPNO": "", "TITLE": "매입_2025년 08월  차량 보험료 납부 요청건", "EVIDENCEURL": "", "STATEMENTNO": "NI2025081900003", "TEAM_CODE": "H1000", "TEAMNM": "택배운영부문", "USERNM": "시스템관리자(개발)", "DATEEVIDENCE": "2025-08-19", "CURRENCY": "KRW", "EXCHANGE": "0", "ACCOUNT_TYPE_CODE": "I1", "ACCOUNT_TYPE": "매입", "PAYMENTDATE": "2025-08-20", "DEPT_CD": "H1000", "DEPT_NM": "택배운영부문", "SUPPLYVALUE": "33,025", "TAX": "0", "PAYMENTMETHOD": "현금", "DEBTOR_SUM": "33,025", "CREDITOR_SUM": "33,025", "FOREIGN_DEBTOR_SUM": "", "FOREIGN_CREDITOR_SUM": "", "SUM": "33,025", "ACCOUNT": "가지급금(업무가불)", "TAX_CODE": "", "SUMMARY": "매입_2025년 08월  차량 보험료 납부 요청건", "DOCUMENTNO": "NI2025081900003", "BUSINESS_NUMBER": "418-82-01190", "CUSTOMER_CODE_NM": "전국화물자동차공제조합", "EVIDENCE_YN": "N", "PROFIT_CENTER_NM": "유한킴벌리운영", "BILLING_RECEIPT": "청구", "PURC_TAX_MAPPING": "예외", "TAX_APPR_NO": "", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "ALIB202508194936", "DATE": "2025-08-19", "PAYMENT_CODE" : "", "PAYMENT_CODE_NAME" : "", "PAYMENTMETHOD": "현금", "PAYMENTMETHOD_NAME": "", "SUGI_YN" : "", "BANK_NAME": "", "ACCT_OWNER": "", "ACCT_NUMBER" : ""}, "DTL": [{"NO": "1", "DEBTOR_CREDITOR": "31", "ENTRYKEY": "31", "ACCOUNT_CODE": "21003010", "ACCOUNT_CODENM": "미지급금(업체)", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량 보험료 가지급금", "PAYMENTDATE": "2025-08-20", "DEBTOR": "0", "FOREIGN_SUMNM": "", "CREDITOR": "33,025", "FOREIGN_CREDITOR": ""}, {"NO": "2", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "10,002", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}, {"NO": "3", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "23,023", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}]}]}
-
-    // 일반
-    // const JSON_HTML_DATA = {"HEADER": {"PUM_KEY": "35909", "MODULEID": "INFRA", "DOCTYPE": "LGL_INFRA_STATEMENT", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "G_ALIB202508193391", "ETC1": "", "ETC2": "", "ETC3": "", "REMARK": "택배사업본부 서울구로지점[54304] 개봉(대)[11336] 대구81자2131 차량 - 2025년08월", "TOTAL_SUM": "46,347", "PROCESS_SIGNER": {"EMPLOYEE_NUM": "", "DEPT_CD": "", "SIGN_TYPE": ""}}, "BODY": [{"MST": {"SAPNO": "", "TITLE": "매입_2025년 08월  차량 보험료 납부 요청건", "EVIDENCEURL": "", "STATEMENTNO": "NI2025081900003", "TEAM_CODE": "H1000", "TEAMNM": "택배운영부문", "USERNM": "시스템관리자(개발)", "DATEEVIDENCE": "2025-08-19", "CURRENCY": "KRW", "EXCHANGE": "0", "ACCOUNT_TYPE_CODE": "I1", "ACCOUNT_TYPE": "매입", "PAYMENTDATE": "2025-08-20", "DEPT_CD": "H1000", "DEPT_NM": "택배운영부문", "SUPPLYVALUE": "33,025", "TAX": "0", "PAYMENTMETHOD": "현금", "DEBTOR_SUM": "33,025", "CREDITOR_SUM": "33,025", "FOREIGN_DEBTOR_SUM": "", "FOREIGN_CREDITOR_SUM": "", "SUM": "33,025", "ACCOUNT": "가지급금(업무가불)", "TAX_CODE": "", "SUMMARY": "매입_2025년 08월  차량 보험료 납부 요청건", "DOCUMENTNO": "NI2025081900003", "BUSINESS_NUMBER": "418-82-01190", "CUSTOMER_CODE_NM": "전국화물자동차공제조합", "EVIDENCE_YN": "N", "PROFIT_CENTER_NM": "유한킴벌리운영", "BILLING_RECEIPT": "청구", "PURC_TAX_MAPPING": "예외", "TAX_APPR_NO": "", "SUBJECT": "2025년 08월  차량 보험료 납부 요청건", "OBJECTID": "ALIB202508194936", "DATE": "2025-08-19", "PAYMENT_CODE": "", "PAYMENT_CODE_NAME": "", "PAYMENTMETHOD": "현금", "PAYMENTMETHOD_NAME": "", "SUGI_YN": "", "BANK_NAME": "", "ACCT_OWNER": "", "ACCT_NUMBER": ""}, "DTL": [{"NO": "1", "DEBTOR_CREDITOR": "31", "ENTRYKEY": "31", "ACCOUNT_CODE": "21003010", "ACCOUNT_CODENM": "미지급금(업체)", "SALESCUSTOMER_CODE": "418-82-01190", "SALESCUSTOMERNM": "전국화물자동차공제조합", "SAP_CLIENT_CODE": "41052617", "SAP_CLIENT": "전국화물자동차공제조합", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량 보험료 가지급금", "PAYMENTDATE": "2025-08-20", "DEBTOR": "0", "FOREIGN_SUMNM": "", "CREDITOR": "33,025", "FOREIGN_CREDITOR": ""}, {"NO": "2", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "10,002", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}, {"NO": "3", "DEBTOR_CREDITOR": "29", "ENTRYKEY": "29", "ACCOUNT_CODE": "11112010", "ACCOUNT_CODENM": "가지급금(업무가불)", "SALESCUSTOMER_CODE": "126-25-15375", "SALESCUSTOMERNM": "롯데글로벌로지스_경기92바3111", "SAP_CLIENT_CODE": "40149116", "SAP_CLIENT": "롯데글로벌로지스_경기92바3111", "AREA_CODE": "M000", "AREA_NAME": "제조물류 부문", "PLACE_CODE": "", "PLACE": "", "PROFIT_CENTER_CODE": "M3901", "PROFIT_CENTER": "유한킴벌리운영", "PAYMENT_CONDITION_CODE": "", "PAYMENT_CONDITION": "", "TAX_CODE": "", "TAX_NM": "", "SUMMARY": "지입차량(경기92바3111)종합 보험료", "PAYMENTDATE": "2025-08-20", "DEBTOR": "23,023", "FOREIGN_SUMNM": "", "CREDITOR": "0", "FOREIGN_CREDITOR": ""}]}]};
-
+    const JSON_DATA = type === 'M' ? JSON.parse(multiJson) : JSON.parse(simpleJson);
+    
     // 3. 팝업 오픈
     const params = {
       token,
@@ -155,7 +171,7 @@ async function runTest(id) {
         aprvTitle: `API 테스트 - ${systemName} - ${formatDate()}`,
         formId,
         ifAppId: Date.now().toString(),
-        docAddCont: JSON_HTML_DATA,
+        docAddCont: JSON_DATA,
         isViewTempBtn: "Y",
         lstAprvSCDocLine: [
           {
