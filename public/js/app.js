@@ -66,7 +66,7 @@ function collectSystems() {
   document.querySelectorAll(".system-box").forEach((box) => {
     const id = box.dataset.id;
     systems.push({
-      systemName: document.getElementById(`systemName-${id}`).value, 
+      systemName: document.getElementById(`systemName-${id}`).value,
       baseUrl: document.getElementById(`baseUrl-${id}`).value,
       formId: document.getElementById(`formId-${id}`).value,
       clientKey: document.getElementById(`clientKey-${id}`).value,
@@ -101,17 +101,31 @@ function addSystemBox(id, values = {}) {
   box.innerHTML = `
     <div class="system-title">
       #${id}. 업무시스템:
-      <input type="text" id="systemName-${id}" value="${v.systemName || ""}" placeholder="업무시스템명 입력">
+      <input type="text" id="systemName-${id}" value="${
+    v.systemName || ""
+  }" placeholder="업무시스템명 입력">
     </div>
-    <label>BASE_URL: <input type="text" id="baseUrl-${id}" size="50" value="${v.baseUrl}"></label><br>
-    <label>FORM_ID: <input type="text" id="formId-${id}" size="50" value="${v.formId}"></label><br>
-    <label>CLIENT_KEY: <input type="text" id="clientKey-${id}" size="50" value="${v.clientKey}"></label><br>
-    <label>USER_ID: <input type="text" id="userId-${id}" size="50" value="${v.userId}"></label><br>
+    <label>BASE_URL: <input type="text" id="baseUrl-${id}" size="50" value="${
+    v.baseUrl
+  }"></label><br>
+    <label>FORM_ID: <input type="text" id="formId-${id}" size="50" value="${
+    v.formId
+  }"></label><br>
+    <label>CLIENT_KEY: <input type="text" id="clientKey-${id}" size="50" value="${
+    v.clientKey
+  }"></label><br>
+    <label>USER_ID: <input type="text" id="userId-${id}" size="50" value="${
+    v.userId
+  }"></label><br>
     <label>통합결재_JSON_DATA:<br>
-      <textarea id="multiJson-${id}" rows="2" cols="60">${v.multiJson || ""}</textarea>
+      <textarea id="multiJson-${id}" rows="2" cols="60">${
+    v.multiJson || ""
+  }</textarea>
     </label><br>
     <label>일반결재_JSON_DATA:<br>
-      <textarea id="simpleJson-${id}" rows="2" cols="60">${v.simpleJson || ""}</textarea>
+      <textarea id="simpleJson-${id}" rows="2" cols="60">${
+    v.simpleJson || ""
+  }</textarea>
     </label><br>
     <button onclick="runMultiTest(${id})">통합결재 테스트 실행</button>
     <button onclick="runSimpleTest(${id})">일반결재 테스트 실행</button>
@@ -130,11 +144,11 @@ function encodeUnicode(str) {
 }
 
 async function runMultiTest(id) {
-  runTest('M', id);
+  runTest("M", id);
 }
 
 async function runSimpleTest(id) {
-  runTest('S', id);
+  runTest("S", id);
 }
 
 // 테스트 실행 함수 (샘플용)
@@ -161,8 +175,11 @@ async function runTest(type, id) {
     if (!token) throw new Error("토큰 발급 실패");
 
     // 통합
-    const JSON_DATA = type === 'M' ? JSON.parse(multiJson) : JSON.parse(simpleJson);
-    
+    const JSON_DATA =
+      type === "M"
+        ? JSON.parse(replacePlaceholders(multiJson))
+        : JSON.parse(replacePlaceholders(simpleJson));
+
     // 3. 팝업 오픈
     const params = {
       token,
@@ -170,7 +187,7 @@ async function runTest(type, id) {
       jsonData: JSON.stringify({
         aprvTitle: `API 테스트 - ${systemName} - ${formatDate()}`,
         formId,
-        ifAppId: Date.now().toString(),
+        ifAppId: `IFAPPID${Date.now().toString()}`,
         docAddCont: JSON_DATA,
         isViewTempBtn: "Y",
       }),
@@ -206,11 +223,48 @@ function removeSystem(id) {
 // 날짜 포맷 함수
 function formatDate(date = new Date()) {
   const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, '0'); // 월
-  const dd = String(date.getDate()).padStart(2, '0');      // 일
-  const hh = String(date.getHours()).padStart(2, '0');     // 시
-  const mi = String(date.getMinutes()).padStart(2, '0');   // 분
-  const ss = String(date.getSeconds()).padStart(2, '0');   // 초
+  const mm = String(date.getMonth() + 1).padStart(2, "0"); // 월
+  const dd = String(date.getDate()).padStart(2, "0"); // 일
+  const hh = String(date.getHours()).padStart(2, "0"); // 시
+  const mi = String(date.getMinutes()).padStart(2, "0"); // 분
+  const ss = String(date.getSeconds()).padStart(2, "0"); // 초
 
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+}
+
+function generateCustomId(text) {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const MM = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const hh = String(now.getHours()).padStart(2, "0");
+  const mm = String(now.getMinutes()).padStart(2, "0");
+  const ss = String(now.getSeconds()).padStart(2, "0");
+
+  const prefix = `${text}${yy}${MM}${dd}${hh}${mm}${ss}`; // 16자리
+  const ms = String(now.getMilliseconds()).padStart(3, "0"); // 밀리초 3자리
+
+  // 밀리초 + 난수 보강해서 14자리 숫자
+  const suffix =
+    ms + String(Math.floor(Math.random() * 1e11)).padStart(11, "0");
+
+  return prefix + suffix; // 총 30자리
+}
+
+// 테스트 데이터 유니크 값으로 치환처리
+function replacePlaceholders(jsonStr, context) {
+  return jsonStr.replace(/{{(.*?)}}/g, (_, key) => {
+    switch (key) {
+      case "KEY1":
+        return generateCustomId("TEST-A");
+      case "KEY2":
+        return generateCustomId("TEST-B");
+      case "KEY3":
+        return generateCustomId("TEST-C");
+      case "KEY4":
+        return generateCustomId("TEST-D");
+      default:
+        return context[key] || "";
+    }
+  });
 }
