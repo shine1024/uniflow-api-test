@@ -173,20 +173,6 @@ async function runTest(type, id) {
         ifAppId: Date.now().toString(),
         docAddCont: JSON_DATA,
         isViewTempBtn: "Y",
-        lstAprvSCDocLine: [
-          {
-            aprvlnUsVal: "demo002",
-            aprvlnUsMod: "S",
-            aprvlnOdr: "1",
-            editYn: "Y",
-          },
-          {
-            aprvlnUsVal: "demo001",
-            aprvlnUsMod: "S",
-            aprvlnOdr: "2",
-            editYn: "Y",
-          },
-        ],
       }),
     };
 
