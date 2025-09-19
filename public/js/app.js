@@ -232,23 +232,25 @@ function formatDate(date = new Date()) {
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
 }
 
+const idSequences = {}; // prefix별 시퀀스 저장 객체
 function generateCustomId(text) {
   const now = new Date();
-  const yy = String(now.getFullYear()).slice(-2);
   const MM = String(now.getMonth() + 1).padStart(2, "0");
   const dd = String(now.getDate()).padStart(2, "0");
-  const hh = String(now.getHours()).padStart(2, "0");
-  const mm = String(now.getMinutes()).padStart(2, "0");
-  const ss = String(now.getSeconds()).padStart(2, "0");
 
-  const prefix = `${text}${yy}${MM}${dd}${hh}${mm}${ss}`; // 16자리
-  const ms = String(now.getMilliseconds()).padStart(3, "0"); // 밀리초 3자리
+  // prefix별 시퀀스 초기화 및 증가
+  if (!idSequences[text]) {
+    idSequences[text] = 0;
+  }
+  idSequences[text] = (idSequences[text] + 1) % 100; // 2자리 순번 (00~99)
+  const seq = String(idSequences[text]).padStart(2, "0");
 
-  // 밀리초 + 난수 보강해서 14자리 숫자
-  const suffix =
-    ms + String(Math.floor(Math.random() * 1e11)).padStart(11, "0");
+  // 8자리 랜덤 숫자 생성 (10000000 ~ 99999999)
+  const randomPart = String(Math.floor(10000000 + Math.random() * 90000000));
 
-  return prefix + suffix; // 총 30자리
+  // 최종 ID 조합
+  const prefix = `${text}${MM}${dd}${randomPart}`;
+  return `${prefix}${seq}`; // 예: A-25091818000000123456
 }
 
 // 테스트 데이터 유니크 값으로 치환처리
@@ -256,13 +258,13 @@ function replacePlaceholders(jsonStr, context) {
   return jsonStr.replace(/{{(.*?)}}/g, (_, key) => {
     switch (key) {
       case "KEY1":
-        return generateCustomId("TEST-A");
+        return generateCustomId("A-");
       case "KEY2":
-        return generateCustomId("TEST-B");
+        return generateCustomId("B-");
       case "KEY3":
-        return generateCustomId("TEST-C");
+        return generateCustomId("C-");
       case "KEY4":
-        return generateCustomId("TEST-D");
+        return generateCustomId("D-");
       default:
         return context[key] || "";
     }
