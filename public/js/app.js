@@ -258,13 +258,13 @@ function replacePlaceholders(jsonStr, context) {
   return jsonStr.replace(/{{(.*?)}}/g, (_, key) => {
     switch (key) {
       case "KEY1":
-        return generateCustomId("A-");
+        return generateCustomId("A");
       case "KEY2":
-        return generateCustomId("B-");
+        return generateCustomId("B");
       case "KEY3":
-        return generateCustomId("C-");
+        return generateCustomId("C");
       case "KEY4":
-        return generateCustomId("D-");
+        return generateCustomId("D");
       default:
         return context[key] || "";
     }

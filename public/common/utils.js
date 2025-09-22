@@ -54,7 +54,7 @@ function openWithPost(url, data, target = "popup") {
   }
 
  // 팝업 크기
-  const width = 1800;
+  const width = 1950;
   const height = 1200;
 
   // 화면 크기 가져오기
