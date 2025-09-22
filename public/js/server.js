@@ -87,6 +87,9 @@ app.post("/VPAY/TEST/returnMoinData_i.do", (req, res) => {
   } catch (err) {
     console.error("❌ MOIN 데이터 처리 실패:", err.message);
     res.status(500).json({ success: false, error: err.message });
+  } finally {
+    console.log(" ");
+    console.log(" ");
   }
 });
 
