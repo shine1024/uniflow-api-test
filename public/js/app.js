@@ -181,13 +181,14 @@ async function runTest(type, id) {
         : JSON.parse(replacePlaceholders(simpleJson));
 
     // 3. 팝업 오픈
+    let ifAppId = `IFAPPID${Date.now().toString()}`;
     const params = {
       token,
       apiKey: "approvalWrite",
       jsonData: JSON.stringify({
         aprvTitle: `API 테스트 - ${systemName} - ${formatDate()}`,
         formId,
-        ifAppId: `IFAPPID${Date.now().toString()}`,
+        ifAppId: ifAppId,
         docAddCont: JSON_DATA,
         isViewTempBtn: "Y",
       }),
