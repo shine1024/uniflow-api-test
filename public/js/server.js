@@ -83,10 +83,10 @@ app.post("/api/reset-config", (req, res) => {
 app.post("/VPAY/TEST/returnMoinData_i.do", (req, res) => {
   try {
     console.log("📥 수신된 MOIN 데이터:", JSON.stringify(req.body, null, 2));
-    res.json({ success: true, message: "MOIN 데이터 수신 완료" });
+    res.json({ MSGTY: 'S', MSG: "MOIN 데이터 수신 완료" });
   } catch (err) {
     console.error("❌ MOIN 데이터 처리 실패:", err.message);
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ MSGTY: 'E', MSG: err.message });
   } finally {
     console.log(" ");
     console.log(" ");
