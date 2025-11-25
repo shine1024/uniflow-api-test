@@ -8,8 +8,10 @@ const xmlparser = require("express-xml-bodyparser"); // ? XML 파서 추가
 const app = express();
 const PORT = 3000;
 
-// JSON 파서
-app.use(express.json());
+// JSON 및 URL-encoded 요청 본문 크기 제한 확장
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 // XML 파서 (Content-Type: application/xml 또는 text/xml)
 app.use(xmlparser({ explicitArray: false }));
