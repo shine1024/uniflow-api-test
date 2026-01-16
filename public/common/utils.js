@@ -38,6 +38,16 @@ async function getToken(baseUrl, secretKey, userId) {
   });
 }
 
+async function makeAutoApprovalRequest(baseUrl, param) {
+  return await fetchData("/api/proxy", {
+    baseUrl,
+    path: "/unicloud/api/call-service-data",
+    body: param,
+  }).then((res => {
+     console.log(res);
+  }));
+}
+
 // 공통 POST 창 열기
 function openWithPost(url, data, target = "popup") {
   const form = document.createElement("form");

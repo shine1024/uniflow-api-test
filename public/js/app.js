@@ -129,6 +129,10 @@ function addSystemBox(id, values = {}) {
     </label><br>
     <button onclick="runMultiTest(${id})">통합결재 테스트 실행</button>
     <button onclick="runSimpleTest(${id})">일반결재 테스트 실행</button>
+    <br/>
+    <button onclick="runAutoMultiTest(${id})">자동생성 통합 테스트 실행</button>
+    <button onclick="runAutoSimpleTest(${id})">자동생성 일반 테스트 실행</button>
+    <br/>
     <button onclick="removeSystem(${id})">삭제</button>
   `;
 
@@ -151,10 +155,18 @@ async function runSimpleTest(id) {
   runTest("S", id);
 }
 
+async function runAutoMultiTest(id) {
+  runTest("M", id, true);
+}
+
+async function runAutoSimpleTest(id) {
+    runTest("S", id, true);
+}
+
 // 테스트 실행 함수 (샘플용)
 // 실제 API 호출 로직은 utils.js 활용 가능
 // 테스트 실행 함수
-async function runTest(type, id) {
+async function runTest(type, id, isAuto = false) {
   const systemName = document.getElementById(`systemName-${id}`).value;
   const baseUrl = document.getElementById(`baseUrl-${id}`).value;
   const formId = document.getElementById(`formId-${id}`).value;
@@ -180,25 +192,79 @@ async function runTest(type, id) {
         ? JSON.parse(replacePlaceholders(multiJson))
         : JSON.parse(replacePlaceholders(simpleJson));
 
+    // 결재선
+    const lstAprvSCDocLine = [{
+      aprvlnUsVal: "demo001",
+        aprvlnUsMod: "S",
+        editYn : 'N'
+    },{
+        aprvlnUsVal: "A00000012",
+        aprvlnUsMod: "S",
+        deptLine: "Y",
+        editYn : 'N'
+    }];
+
+    // 수신선
+
+    const lstAprvLDocLine = [{
+        aprvlnUsVal: "demo001",
+            aprvlnUsMod: "L",
+            editYn : 'N'
+        },{
+            aprvlnUsVal: "A00000012",
+            aprvlnUsMod: "L",
+            deptLine: "Y",
+            editYn : 'N'
+    }];
+
+    //참조
+    const lstAprvRDocLine = [{
+      aprvlnUsVal: "demo001",
+        aprvlnUsMod: "R",
+        editYn : 'N'
+    },{
+        aprvlnUsVal: "A00000012",
+        aprvlnUsMod: "R",
+        deptLine: "Y",
+        editYn : 'N'
+    }];
+
+    //열람
+    const lstAprvVDocLine = [{
+      aprvlnUsVal: "demo001",
+        aprvlnUsMod: "V",
+        editYn : 'N'
+    },{
+        aprvlnUsVal: "A00000012",
+        aprvlnUsMod: "V",
+        deptLine: "Y",
+        editYn : 'N'
+    }];
+
     // 3. 팝업 오픈
     let ifAppId = `IFAPPID${Date.now().toString()}`;
     const params = {
       token,
-      apiKey: "approvalWrite",
       jsonData: JSON.stringify({
         aprvTitle: `API 테스트 - ${systemName} - ${formatDate()}`,
         formId,
         ifAppId: ifAppId,
         docAddCont: JSON_DATA,
         isViewTempBtn: "Y",
+        lstAprvSCDocLine: lstAprvSCDocLine,
+        lstAprvLDocLine: lstAprvLDocLine,
+        lstAprvRDocLine: lstAprvRDocLine,
+        lstAprvVDocLine: lstAprvVDocLine
       }),
     };
 
-    openWithPost(
-      `${baseUrl}/unicloud/api/call-service-page`,
-      params,
-      `popup-${id}`
-    );
+    if(isAuto) {
+      params.apiKey = "approvalWriteAuto";
+      makeAutoApprovalRequest(baseUrl, params);
+    } else {
+      params.apiKey = "approvalWrite";
+        openWithPost(`${baseUrl}/unicloud/api/call-service-page`, params, `popup-${id}`);
+    }
 
     console.log(`✅ 시스템 #${id} 실행 완료`, {
       baseUrl,
